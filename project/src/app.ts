@@ -197,11 +197,13 @@ async function setupData() {
   setLastUpdatedTimestamp(data);
 }
 
-function renderChart(data: any, labels: any) {
+function renderChart(data: number[], labels: string[]) {
   const lineChart = $('#lineChart') as HTMLCanvasElement;
   const ctx = lineChart.getContext('2d');
+
   Chart.defaults.color = '#f5eaea';
   Chart.defaults.font.family = 'Exo 2';
+
   new Chart(ctx, {
     type: 'line',
     data: {
@@ -219,13 +221,16 @@ function renderChart(data: any, labels: any) {
   });
 }
 
-function setChartData(data: any[]) {
-  const chartData = data.slice(-14).map((value: { Cases: any }) => value.Cases);
+function setChartData(data: CountrySummaryInfo[]) {
+  const chartData = data
+    .slice(-14) //최근 2주
+    .map((value: CountrySummaryInfo) => value.Cases);
   const chartLabel = data
     .slice(-14)
     .map((value: { Date: string | number | Date }) =>
       new Date(value.Date).toLocaleDateString().slice(5, -1)
     );
+
   renderChart(chartData, chartLabel);
 }
 

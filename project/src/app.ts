@@ -24,9 +24,9 @@ const confirmedTotal = $('.confirmed-total') as HTMLSpanElement;
 const deathsTotal = $('.deaths') as HTMLParagraphElement;
 const recoveredTotal = $('.recovered') as HTMLParagraphElement;
 const lastUpdatedTime = $('.last-updated-time') as HTMLParagraphElement;
-const rankList = $('.rank-list');
-const deathsList = $('.deaths-list');
-const recoveredList = $('.recovered-list');
+const rankList = $('.rank-list') as HTMLOListElement;
+const deathsList = $('.deaths-list') as HTMLOListElement;
+const recoveredList = $('.recovered-list') as HTMLOListElement;
 const deathSpinner = createSpinnerElement('deaths-spinner');
 const recoveredSpinner = createSpinnerElement('recovered-spinner');
 
@@ -78,18 +78,20 @@ function startApp() {
 
 // events
 function initEvents() {
-  rankList.addEventListener('click', () => handleListClick);
+  if (rankList) {
+    rankList.addEventListener('click', () => handleListClick);
+  }
 }
 
-async function handleListClick(event: {
-  target: { parentElement: { id: any }; id: any };
-}) {
+async function handleListClick(event: MouseEvent) {
   let selectedId;
   if (
     event.target instanceof HTMLParagraphElement ||
     event.target instanceof HTMLSpanElement
   ) {
-    selectedId = event.target.parentElement.id;
+    selectedId = event.target.parentElement
+      ? event.target.parentElement.id
+      : undefined;
   }
   if (event.target instanceof HTMLLIElement) {
     selectedId = event.target.id;
@@ -101,24 +103,29 @@ async function handleListClick(event: {
   clearRecoveredList();
   startLoadingAnimation();
   isDeathLoading = true;
-  const { data: deathResponse } = await fetchCountryInfo(
-    selectedId,
-    CovidStatus.Deaths
-  );
-  const { data: recoveredResponse } = await fetchCountryInfo(
-    selectedId,
-    CovidStatus.Recerverd
-  );
-  const { data: confirmedResponse } = await fetchCountryInfo(
-    selectedId,
-    CovidStatus.Confirmed
-  );
-  endLoadingAnimation();
-  setDeathsList(deathResponse);
-  setTotalDeathsByCountry(deathResponse);
-  setRecoveredList(recoveredResponse);
-  setTotalRecoveredByCountry(recoveredResponse);
-  setChartData(confirmedResponse);
+
+  if (selectedId) {
+    const { data: deathResponse } = await fetchCountryInfo(
+      selectedId,
+      CovidStatus.Deaths
+    );
+    const { data: recoveredResponse } = await fetchCountryInfo(
+      selectedId,
+      CovidStatus.Recerverd
+    );
+    const { data: confirmedResponse } = await fetchCountryInfo(
+      selectedId,
+      CovidStatus.Confirmed
+    );
+
+    endLoadingAnimation();
+    setDeathsList(deathResponse);
+    setTotalDeathsByCountry(deathResponse);
+    setRecoveredList(recoveredResponse);
+    setTotalRecoveredByCountry(recoveredResponse);
+    setChartData(confirmedResponse);
+  }
+
   isDeathLoading = false;
 }
 
@@ -138,12 +145,12 @@ function setDeathsList(data: CountrySummaryInfo[]) {
     p.textContent = new Date(value.Date).toLocaleDateString().slice(0, -1);
     li.appendChild(span);
     li.appendChild(p);
-    deathsList.appendChild(li);
+    deathsList?.appendChild(li);
   });
 }
 
 function clearDeathList() {
-  deathsList.innerHTML = null;
+  deathsList.innerHTML = '';
 }
 
 function setTotalDeathsByCountry(data: CountrySummaryInfo[]) {
@@ -166,12 +173,12 @@ function setRecoveredList(data: CountrySummaryInfo[]) {
     p.textContent = new Date(value.Date).toLocaleDateString().slice(0, -1);
     li.appendChild(span);
     li.appendChild(p);
-    recoveredList.appendChild(li);
+    recoveredList?.appendChild(li);
   });
 }
 
 function clearRecoveredList() {
-  recoveredList.innerHTML = null;
+  recoveredList.innerHTML = '';
 }
 
 function setTotalRecoveredByCountry(data: CountrySummaryInfo[]) {
@@ -204,21 +211,23 @@ function renderChart(data: number[], labels: string[]) {
   Chart.defaults.color = '#f5eaea';
   Chart.defaults.font.family = 'Exo 2';
 
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Confirmed for the last two weeks',
-          backgroundColor: '#feb72b',
-          borderColor: '#feb72b',
-          data,
-        },
-      ],
-    },
-    options: {},
-  });
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Confirmed for the last two weeks',
+            backgroundColor: '#feb72b',
+            borderColor: '#feb72b',
+            data,
+          },
+        ],
+      },
+      options: {},
+    });
+  }
 }
 
 function setChartData(data: CountrySummaryInfo[]) {

@@ -5,7 +5,15 @@
     "outDir": "./dist",
     "moduleResolution": "Node16",
     "lib": ["ES2015", "DOM", "DOM.Iterable"],
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "strict": true
+    //strict 사용시 아래 옵션들이 처리됨
+    // "strictNullChecks": true,
+    // "strictFunctionTypes": true,
+    // "strictBindCallApply": true,
+    // "strictPropertyInitialization": true,
+    // "noImplicitThis": true,
+    // "alwaysStrict": true
   },
   "include": ["./src/**/*"]
 }

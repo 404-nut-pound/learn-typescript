@@ -66,7 +66,7 @@ function fetchCountryInfo(
   status: CovidStatus
 ): Promise<AxiosResponse<CountrySummaryInfo[]>> {
   // params: confirmed, recovered, deaths
-  const url = `https://api.covid19api.com/country/${countryCode}/status/${status}`;
+  const url = `https://api.covid19api.com/live/country/${countryCode}/status/${status}`;
   return axios.get(url);
 }
 
@@ -79,7 +79,7 @@ function startApp() {
 // events
 function initEvents() {
   if (rankList) {
-    rankList.addEventListener('click', () => handleListClick);
+    rankList.addEventListener('click', handleListClick);
   }
 }
 
@@ -139,7 +139,7 @@ function setDeathsList(data: CountrySummaryInfo[]) {
     const li = document.createElement('li');
     li.setAttribute('class', 'list-item-b flex align-center');
     const span = document.createElement('span');
-    span.textContent = value.Cases.toLocaleString();
+    span.textContent = value.Deaths.toLocaleString();
     span.setAttribute('class', 'deaths');
     const p = document.createElement('p');
     p.textContent = new Date(value.Date).toLocaleDateString().slice(0, -1);
@@ -154,7 +154,7 @@ function clearDeathList() {
 }
 
 function setTotalDeathsByCountry(data: CountrySummaryInfo[]) {
-  deathsTotal.innerText = data[0].Cases.toLocaleString();
+  deathsTotal.innerText = data[0].Deaths.toLocaleString();
 }
 
 function setRecoveredList(data: CountrySummaryInfo[]) {
@@ -167,7 +167,7 @@ function setRecoveredList(data: CountrySummaryInfo[]) {
     const li = document.createElement('li');
     li.setAttribute('class', 'list-item-b flex align-center');
     const span = document.createElement('span');
-    span.textContent = value.Cases.toLocaleString();
+    span.textContent = value.Recovered.toLocaleString();
     span.setAttribute('class', 'recovered');
     const p = document.createElement('p');
     p.textContent = new Date(value.Date).toLocaleDateString().slice(0, -1);
@@ -182,7 +182,7 @@ function clearRecoveredList() {
 }
 
 function setTotalRecoveredByCountry(data: CountrySummaryInfo[]) {
-  recoveredTotal.innerText = data[0].Cases.toLocaleString();
+  recoveredTotal.innerText = data[0].Recovered.toLocaleString();
 }
 
 function startLoadingAnimation() {
@@ -233,7 +233,7 @@ function renderChart(data: number[], labels: string[]) {
 function setChartData(data: CountrySummaryInfo[]) {
   const chartData = data
     .slice(-14) //최근 2주
-    .map((value: CountrySummaryInfo) => value.Cases);
+    .map((value: CountrySummaryInfo) => value.Active);
   const chartLabel = data
     .slice(-14)
     .map((value: { Date: string | number | Date }) =>

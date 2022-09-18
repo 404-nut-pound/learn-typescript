@@ -30,14 +30,16 @@ export interface Global {
 }
 
 export interface CountrySummaryInfo {
-  Cases: number;
+  Active: number;
   City: string;
   CityCode: string;
+  Confirmed: number;
   Country: string;
   CountryCode: string;
   Date: string;
+  Deaths: number;
   Lat: string;
   Lon: string;
   Province: string;
-  Status: string;
+  Recovered: number;
 }

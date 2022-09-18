@@ -1,5 +1,12 @@
 /* eslint-disable prettier/prettier */
 // utils
+//라이브러리 로딩
+//import 변수명 from '라이브러리'
+//변수, 함수 로딩
+//import {} from '파일 상대 경로 '
+import axios from 'axios';
+import * as Chart from 'chart.js';
+
 function $(selector: string) {
   return document.querySelector(selector);
 }
